@@ -18,7 +18,7 @@ pub fn populate(world: &mut World) {
     world.spawn((
         Position { x: 22.0, y: 2.0 },
         Velocity { vx: 0.0, vy: 0.0 },
-        Player,
+        Player {},
     ));
     spawn_wave(world, 10.0, 6);
 }
@@ -60,7 +60,7 @@ pub fn movement(w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) {
 /// Враги отражаются от краев и спускаются к игроку.
 pub fn enemy_ai(w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) {
     for (_e, pos, vel) in w.query_mut::<(Entity, &mut Position, &mut Velocity, &Enemy)>() {
-        if pos.x <= 1.0 || pos.x >= (Width - 2) as f32 {
+        if pos.x <= 1.0 || pos.x >= (WIDTH - 2) as f32 {
             vel.vx = -vel.vx;
             pos.y += 0.8;
         }
@@ -119,7 +119,7 @@ pub fn combat(w: &mut World, _res: &mut Resources, cmd: &mut CommandBuffer) {
     let gone: Vec<(Entity)> = w
         .query::<(Entity, &Position, &Bullet)>()
         .iter()
-        .filter(|(_, p, _)| p.y > (Height - 1) as f32)
+        .filter(|(_, p, _)| p.y > (HEIGHT - 1) as f32)
         .map(|(e, _, _)| e)
         .collect();
     for e in gone {
@@ -129,7 +129,7 @@ pub fn combat(w: &mut World, _res: &mut Resources, cmd: &mut CommandBuffer) {
 
 /// ASCII-render: каждая группа сущностей - отдельный читающий запрос.
 pub fn ascii_render(w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) {
-    let mut screen = ['.'; Width * Height];
+    let mut screen = ['.'; WIDTH * HEIGHT];
 
     for (_e, pos, _b) in w.query::<(Entity, &Position, &Bullet)>().iter() {
         put(&mut screen, pos, '|');
@@ -144,7 +144,7 @@ pub fn ascii_render(w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) 
     }
 
     println!("tick {:3} | сущностей: {}", res.time.tick, w.len());
-    for row in screen.chunks(Width) {
+    for row in screen.chunks(WIDTH) {
         println!("{}", row.iter().collect::<String>());
     }
 }
@@ -152,7 +152,7 @@ pub fn ascii_render(w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) 
 /// Запись глифа с проверкой границ.
 fn put(screen: &mut [char], pos: &Position, glyph: char) {
     let (x, y) = (pos.x as i32, pos.y as i32);
-    if (0..Width as i32).contains(&x) && (0..Height as i32).contains(&y) {
-        screen[y as usize * Width + x as usize] = glyph;
+    if (0..WIDTH as i32).contains(&x) && (0..HEIGHT as i32).contains(&y) {
+        screen[y as usize * WIDTH + x as usize] = glyph;
     }
 }
