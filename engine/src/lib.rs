@@ -10,3 +10,7 @@ pub mod types;
 //pub use input::Input;
 //pub use resources::Resources;
 //pub use time::Time;
+
+pub use hecs::World;
+pub use hecs::CommandBuffer;
+pub use hecs::Entity;

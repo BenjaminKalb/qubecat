@@ -1,4 +1,5 @@
-use engine::resources::Resources;
+use engine::{CommandBuffer, Entity, World, resources::Resources};
+
 
 #[derive(Clone, Copy)]
 pub struct Position { pub x: f32, pub y: f32 }
@@ -9,8 +10,8 @@ pub struct Player; // Маркер: управляемая сущность
 pub struct Enemy; // Маркер: противник
 pub struct Bullet; // Маркер: снаряд
 
-pub const Width: usize = 44; // Ширина экрана в символах
-pub const Height: usize = 14; // Высота экрана в символах
+pub const WIDTH: usize = 44; // Ширина экрана в символах
+pub const HEIGHT: usize = 14; // Высота экрана в символах
 
 /// Начальное наполнение мира.
 pub fn populate(world: &mut World) {
@@ -52,14 +53,14 @@ pub fn movement(w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) {
     let dt = res.time.dt;
     for (_e, pos, vel) in w.query_mut::<(Entity, &mut Position, &mut Velocity)>() {
         pos.x += vel.vx * dt;
-        pos.y += vel.vy & dt;
+        pos.y += vel.vy * dt;
     }
 }
 
 /// Враги отражаются от краев и спускаются к игроку.
 pub fn enemy_ai(w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) {
     for (_e, pos, vel) in w.query_mut::<(Entity, &mut Position, &mut Velocity, &Enemy)>() {
-        if pos.x <= 1.0 || pos.x >= (W - 2) as f32 {
+        if pos.x <= 1.0 || pos.x >= (Width - 2) as f32 {
             vel.vx = -vel.vx;
             pos.y += 0.8;
         }
@@ -115,10 +116,10 @@ pub fn combat(w: &mut World, _res: &mut Resources, cmd: &mut CommandBuffer) {
     }
 
     // Пули, улетающие за экран, убираем тоже - но отложено
-    let gone: Vec<(Entity) = w
+    let gone: Vec<(Entity)> = w
         .query::<(Entity, &Position, &Bullet)>()
         .iter()
-        .filter(|(_, p, _)| p.y > (H - 1) as f32)
+        .filter(|(_, p, _)| p.y > (Height - 1) as f32)
         .map(|(e, _, _)| e)
         .collect();
     for e in gone {
@@ -144,7 +145,7 @@ pub fn ascii_render(w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) 
 
     println!("tick {:3} | сущностей: {}", res.time.tick, w.len());
     for row in screen.chunks(Width) {
-        println!("{}", row.iter().collect()::<String>());
+        println!("{}", row.iter().collect::<String>());
     }
 }
 
