@@ -1,0 +1,11 @@
+[package]
+name = "client"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+engine = { path = "../engine" }
+winit = "0.30.13"
+glutin = "0.32.3"
+glow = "0.18.0"
+glutin-winit = "0.5.0"

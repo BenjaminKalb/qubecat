@@ -1,0 +1,55 @@
+use crate::{engine::Engine, types::SystemFn};
+
+/// Приложение: движок плюс упоядоченные списки систем.
+pub struct Application {
+    pub engine: Engine,
+    dt: f32,
+    update: Vec<SystemFn>,
+    render: Vec<SystemFn>,
+}
+
+impl Application {
+    pub fn new(dt: f32) -> Self {
+        Self { 
+            engine: Engine::new(dt), 
+            dt, 
+            update: Vec::new(), 
+            render: Vec::new() 
+        }
+    }
+
+    fn tick(&mut self) {
+        // Разбираем движок на поля: заимствования расходятся честно
+        let Engine { world, commands, resources } = &mut self.engine;
+        for system in &self.update {
+            system(world, resources, commands);
+        }
+        commands.run_on(world);
+        resources.time.tick += 1;
+        resources.time.elapsed += resources.time.dt;
+    }
+
+    /// Главный цикл: накопитель времени и фиксированный шаг.
+    pub fn run(mut self) {
+        let mut last = std::time::Instant::now();
+        let mut acc = 0.0f32;
+        while !self.engine.resources.input.quit {
+            acc += last.elapsed().as_secs_f32().min(0.25); // защита от скачков
+            last = std::time::Instant::now();
+            while acc >= self.dt {
+                acc -= self.dt;
+                self.tick();
+            }
+            let Engine { world, commands, resources } = &mut self.engine;
+            for system in &self.render { // рендер каждый кадр, вне тиков
+                system(world, resources, commands);
+            }
+        }
+    }
+
+    /// Порядок добавления = порядок исполнения.
+    pub fn add_update(mut self, system: SystemFn) -> Self {
+        self.update.push(system); self }
+    pub fn add_render(mut self, system: SystemFn) -> Self {
+        self.render.push(system); self }
+}
