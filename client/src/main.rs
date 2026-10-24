@@ -8,6 +8,7 @@ pub fn main() {
         .add_update(game::player_control)
         .add_update(game::movement)
         .add_update(game::enemy_ai)
+        .add_update(game::player_fire)
         .add_update(game::combat)
         .add_render(game::ascii_render);
 

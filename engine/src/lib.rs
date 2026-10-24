@@ -11,6 +11,4 @@ pub mod types;
 //pub use resources::Resources;
 //pub use time::Time;
 
-pub use hecs::World;
-pub use hecs::CommandBuffer;
-pub use hecs::Entity;
+pub use hecs::{CommandBuffer, Entity, World};

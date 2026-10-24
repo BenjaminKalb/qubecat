@@ -43,7 +43,7 @@ pub fn demo_input(_w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) {
 /// Ввод игрока превращается в его Velocity.
 pub fn player_control(w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) {
     let dir = res.input.move_dir;
-    for (_e, vel) in w.query_mut::<(&mut Velocity, &Player)>() {
+    for (_e, vel, _) in w.query_mut::<(Entity, &mut Velocity, &Player)>() {
         vel.vx = dir * 5.0;
     }
 }
@@ -58,8 +58,8 @@ pub fn movement(w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) {
 }
 
 /// Враги отражаются от краев и спускаются к игроку.
-pub fn enemy_ai(w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) {
-    for (_e, pos, vel) in w.query_mut::<(Entity, &mut Position, &mut Velocity, &Enemy)>() {
+pub fn enemy_ai(w: &mut World, _res: &mut Resources, _c: &mut CommandBuffer) {
+    for (_e, pos, vel, _) in w.query_mut::<(Entity, &mut Position, &mut Velocity, &Enemy)>() {
         if pos.x <= 1.0 || pos.x >= (WIDTH - 2) as f32 {
             vel.vx = -vel.vx;
             pos.y += 0.8;
@@ -73,7 +73,8 @@ pub fn player_fire(w: &mut World, res: &mut Resources, cmd: &mut CommandBuffer) 
         return;
     }
     // Позиция игрока: игрок в демо всегда один
-    let Some((_, pos, _)) = w.query::<(Entity, &Position, &Player)>().iter().next()
+    let mut query = w.query::<(Entity, &Position, &Player)>();
+    let Some((_, pos, _)) = query.iter().next()
     else {
         return;
     };
@@ -116,7 +117,7 @@ pub fn combat(w: &mut World, _res: &mut Resources, cmd: &mut CommandBuffer) {
     }
 
     // Пули, улетающие за экран, убираем тоже - но отложено
-    let gone: Vec<(Entity)> = w
+    let gone: Vec<Entity> = w
         .query::<(Entity, &Position, &Bullet)>()
         .iter()
         .filter(|(_, p, _)| p.y > (HEIGHT - 1) as f32)
