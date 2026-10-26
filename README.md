@@ -1,4 +1,4 @@
-# Qubecat 2D Engine written on Rust
+# Qubecat 3D Voxel Engine written on Rust
 - Currently in early-development.
 
 ## Quick Start
