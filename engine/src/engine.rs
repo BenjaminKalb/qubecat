@@ -1,6 +1,9 @@
 use hecs::{CommandBuffer, World};
 
-use crate::{input::Input, math::camera::Camera, resources::Resources, time::Time};
+use crate::{
+    input::Input, math::camera::Camera, resources::Resources, time::Time,
+    voxels::voxel_world::VoxelWorld,
+};
 
 /// Состояние движка: мир, ресурсы и буфер команд.
 pub struct Engine {
@@ -22,6 +25,7 @@ impl Engine {
                 },
                 input: Input::default(),
                 camera: Camera::default(),
+                voxels: VoxelWorld::default(),
             },
         }
     }

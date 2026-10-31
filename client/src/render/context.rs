@@ -67,6 +67,11 @@ impl GlContext {
         let vsync = SwapInterval::Wait(NonZeroU32::new(1).expect("1 != 0"));
         let _ = surface.set_swap_interval(&context, vsync);
 
+        // Трёхмерные меши: дальние фрагменты перекрываются ближними.
+        unsafe {
+            gl.enable(glow::DEPTH_TEST);
+        }
+
         Ok(Self {
             window,
             surface,

@@ -1,4 +1,5 @@
 mod app_handler;
+mod game;
 mod input_mapper;
 mod render;
 
@@ -8,7 +9,9 @@ use winit::event_loop::EventLoop;
 use crate::app_handler::AppHandler;
 
 fn main() {
-    let app = Application::new(ENGINE_DT);
+    let app = Application::new(ENGINE_DT)
+        .add_update(game::world_gen)
+        .add_update(game::player_move);
     let mut handler = AppHandler::new(app);
 
     let event_loop = EventLoop::builder().build().expect("cannot run event loop");

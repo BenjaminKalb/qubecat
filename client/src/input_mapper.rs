@@ -25,6 +25,8 @@ impl InputMapper {
         self.bindings.insert(KeyCode::KeyA, Key::A);
         self.bindings.insert(KeyCode::KeyS, Key::S);
         self.bindings.insert(KeyCode::KeyD, Key::D);
+        self.bindings.insert(KeyCode::KeyQ, Key::Q);
+        self.bindings.insert(KeyCode::KeyE, Key::E);
         self.bindings.insert(KeyCode::Space, Key::Space);
         self.bindings.insert(KeyCode::Escape, Key::Escape);
         self.bindings.insert(KeyCode::ShiftLeft, Key::LeftShift);

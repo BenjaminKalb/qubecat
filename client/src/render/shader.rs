@@ -63,12 +63,6 @@ impl ShaderProgram {
             }
         }
     }
-
-    pub unsafe fn dispose(self, gl: &glow::Context) {
-        unsafe {
-            gl.delete_program(self.program);
-        }
-    }
 }
 
 unsafe fn compile_shader(
