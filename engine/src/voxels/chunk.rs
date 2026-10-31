@@ -2,7 +2,13 @@ use std::ops::{Add, Sub};
 
 pub const CHUNK_SIZE: usize = 16;
 pub const CHUNK_SIZE_SHIFT: u32 = 4;
+pub const CHUNK_SIZE_MASK: usize = CHUNK_SIZE - 1; // 0b1111 для 16
 pub const CHUNK_VOLUME: usize = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
+
+const _: () = assert!(
+    CHUNK_SIZE.is_power_of_two(),
+    "CHUNK_SIZE must be a power of two"
+);
 
 pub struct Chunk {
     pub blocks: Box<[u16; CHUNK_VOLUME]>, // 16x16x16
@@ -73,9 +79,9 @@ impl ChunkPos {
     #[inline]
     pub fn local_index_of(bx: i32, by: i32, bz: i32) -> (usize, usize, usize) {
         (
-            (bx & 0xF) as usize,
-            (by & 0xF) as usize,
-            (bz & 0xF) as usize,
+            (bx as usize) & CHUNK_SIZE_MASK,
+            (by as usize) & CHUNK_SIZE_MASK,
+            (bz as usize) & CHUNK_SIZE_MASK,
         )
     }
 
