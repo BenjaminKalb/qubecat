@@ -10,7 +10,42 @@ pub struct Chunk {
     pub dirty: bool,
 }
 
-impl Chunk {}
+impl Chunk {
+    #[inline]
+    pub fn new(pos: ChunkPos) -> Self {
+        Self {
+            blocks: Box::new([0; CHUNK_VOLUME]),
+            pos,
+            dirty: false,
+        }
+    }
+
+    #[inline]
+    pub fn index(x: usize, y: usize, z: usize) -> usize {
+        debug_assert!(x < CHUNK_SIZE && y < CHUNK_SIZE && z < CHUNK_SIZE);
+        x + y * CHUNK_SIZE * CHUNK_SIZE + z * CHUNK_SIZE
+    }
+
+    #[inline]
+    pub fn get(&self, x: usize, y: usize, z: usize) -> u16 {
+        self.blocks[Self::index(x, y, z)]
+    }
+
+    #[inline]
+    pub fn set(&mut self, x: usize, y: usize, z: usize, block: u16) {
+        self.blocks[Self::index(x, y, z)] = block;
+        self.dirty = true;
+    }
+}
+
+impl std::fmt::Debug for Chunk {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Chunk")
+            .field("pos", &self.pos)
+            .field("dirty", &self.dirty)
+            .finish()
+    }
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct ChunkPos {
@@ -35,22 +70,31 @@ impl ChunkPos {
         }
     }
 
+    #[inline]
+    pub fn local_index_of(bx: i32, by: i32, bz: i32) -> (usize, usize, usize) {
+        (
+            (bx & 0xF) as usize,
+            (by & 0xF) as usize,
+            (bz & 0xF) as usize,
+        )
+    }
+
     /// Минимальная (мировая) X координата блока в этом чанке
     #[inline]
     pub const fn min_block_x(&self) -> i32 {
-        self.cx << 4
+        self.cx << CHUNK_SIZE_SHIFT
     }
 
     /// Минимальная (мировая) Y координата блока в этом чанке
     #[inline]
     pub const fn min_block_y(&self) -> i32 {
-        self.cy << 4
+        self.cy << CHUNK_SIZE_SHIFT
     }
 
     /// Минимальная (мировая) Z координата блока в этом чанке
     #[inline]
     pub const fn min_block_z(&self) -> i32 {
-        self.cz << 4
+        self.cz << CHUNK_SIZE_SHIFT
     }
 
     /// Расстояние Чебышёва
