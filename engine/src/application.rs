@@ -34,6 +34,7 @@ impl Application {
     }
 
     /// Главный цикл: накопитель времени и фиксированный шаг.
+    #[deprecated = "New render system is coming soon"]
     pub fn run(mut self) {
         let target_fps = 60.0; // рендер может не совпадать с тик-рейтом
         let frame_budget = std::time::Duration::from_secs_f32(1.0 / target_fps);
@@ -63,6 +64,9 @@ impl Application {
         }
     }
 
+    pub fn step(&mut self) {
+
+    }
     /// Порядок добавления = порядок исполнения.
     pub fn add_update(mut self, system: SystemFn) -> Self {
         self.update.push(system);
