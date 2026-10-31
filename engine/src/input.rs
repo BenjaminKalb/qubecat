@@ -30,7 +30,10 @@ pub struct MouseState {
     buttons_just_released: HashSet<MouseButton>,
 }
 
+#[derive(Debug, Default)]
 pub struct Input {
+    /// Запрос на завершение: ставится CloseRequested/Escape, читается AppHandler.
+    quit_requested: bool,
     keys_held: HashSet<Key>,
     keys_just_pressed: HashSet<Key>,
     keys_just_released: HashSet<Key>,
@@ -41,6 +44,16 @@ pub struct Input {
 impl Input {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Запрос платформы/обработчика закрыть приложение.
+    pub fn request_quit(&mut self) {
+        self.quit_requested = true;
+    }
+
+    /// Прочитан AppHandler'ом: пора ли завершать.
+    pub fn quit_requested(&self) -> bool {
+        self.quit_requested
     }
 
     // Keyboard
@@ -60,13 +73,13 @@ impl Input {
         self.keys_held.iter()
     }
 
-    pub(crate) fn press(&mut self, key: Key) {
+    pub fn press(&mut self, key: Key) {
         if self.keys_held.insert(key) {
             self.keys_just_pressed.insert(key);
         }
     }
 
-    pub(crate) fn release(&mut self, key: Key) {
+    pub fn release(&mut self, key: Key) {
         if self.keys_held.remove(&key) {
             self.keys_just_released.insert(key);
         }
@@ -97,22 +110,22 @@ impl Input {
         self.mouse.buttons_held.iter()
     }
 
-    pub(crate) fn set_mouse_pos(&mut self, x: f64, y: f64) {
+    pub fn set_mouse_pos(&mut self, x: f64, y: f64) {
         self.mouse.position = (x, y);
     }
 
-    pub(crate) fn add_mouse_scroll(&mut self, dx: f32, dy: f32) {
+    pub fn add_mouse_scroll(&mut self, dx: f32, dy: f32) {
         self.mouse.scroll_delta.0 += dx;
         self.mouse.scroll_delta.1 += dy;
     }
 
-    pub(crate) fn mouse_press(&mut self, button: MouseButton) {
+    pub fn mouse_press(&mut self, button: MouseButton) {
         if self.mouse.buttons_held.insert(button) {
             self.mouse.buttons_just_pressed.insert(button);
         }
     }
 
-    pub(crate) fn mouse_release(&mut self, button: MouseButton) {
+    pub fn mouse_release(&mut self, button: MouseButton) {
         if self.mouse.buttons_held.remove(&button) {
             self.mouse.buttons_just_released.insert(button);
         }
@@ -138,17 +151,6 @@ impl Input {
 
         for button in self.mouse.buttons_held.drain() {
             self.mouse.buttons_just_released.insert(button);
-        }
-    }
-}
-
-impl Default for Input {
-    fn default() -> Self {
-        Self {
-            keys_held: HashSet::new(),
-            keys_just_pressed: HashSet::new(),
-            keys_just_released: HashSet::new(),
-            mouse: MouseState::default(),
         }
     }
 }

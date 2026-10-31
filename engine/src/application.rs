@@ -1,6 +1,6 @@
 use std::time::Instant;
 
-use crate::{engine::Engine, input::Key::Escape, types::SystemFn};
+use crate::{engine::Engine, types::SystemFn};
 
 const MAX_FRAME_TIME: f32 = 0.25;
 
@@ -65,8 +65,8 @@ impl Application {
         self.render_frame();
     }
 
-    pub fn should_quit(&self) {
-        self.engine.resources.input.is_just_pressed(Escape);
+    pub fn should_quit(&self) -> bool {
+        self.engine.resources.input.quit_requested()
     }
 
     pub fn add_update(mut self, system: SystemFn) -> Self {
