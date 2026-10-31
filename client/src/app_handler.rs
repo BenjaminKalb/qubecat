@@ -6,12 +6,16 @@ use winit::window::{Window, WindowId};
 use engine::Application;
 
 use crate::input_mapper::InputMapper;
+use crate::render::context::GlContext;
+use crate::render::shader::ShaderProgram;
+use crate::render::triangle::Triangle;
 
-/// Platform sloy: окно, события ОС, кадры.
 pub struct AppHandler {
     app: Application,
     mapper: InputMapper,
-    window: Option<Window>,
+    ctx: Option<GlContext>,
+    program: Option<ShaderProgram>,
+    triangle: Option<Triangle>,
 }
 
 impl AppHandler {
@@ -19,7 +23,9 @@ impl AppHandler {
         Self {
             app,
             mapper: InputMapper::new(),
-            window: None,
+            ctx: None,
+            program: None,
+            triangle: None,
         }
     }
 }
@@ -27,11 +33,11 @@ impl AppHandler {
 impl ApplicationHandler for AppHandler {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
         let attrs = Window::default_attributes().with_title("Qubecat Engine");
-        self.window = Some(
-            event_loop
-                .create_window(attrs)
-                .expect("can't create window"),
-        );
+        let ctx = GlContext::create(event_loop, attrs).expect("не удалось создать GL-контекст");
+
+        self.program = Some(ShaderProgram::new(&ctx.gl, VERTEX_SHADER, FRAGMENT_SHADER));
+        self.triangle = Some(Triangle::new(&ctx.gl));
+        self.ctx = Some(ctx);
     }
 
     fn window_event(
@@ -42,6 +48,23 @@ impl ApplicationHandler for AppHandler {
     ) {
         match event {
             WindowEvent::CloseRequested => self.app.engine.resources.input.request_quit(),
+            WindowEvent::Resized(size) => {
+                if let Some(ctx) = &mut self.ctx {
+                    ctx.resize(size.width, size.height);
+                }
+            }
+            WindowEvent::RedrawRequested => {
+                let Some(ctx) = &mut self.ctx else {
+                    return;
+                };
+
+                ctx.clear();
+                if let (Some(program), Some(triangle)) = (&self.program, &self.triangle) {
+                    program.bind(&ctx.gl);
+                    triangle.draw(&ctx.gl);
+                }
+                ctx.present();
+            }
             ref ev => self
                 .mapper
                 .handle_event(ev, &mut self.app.engine.resources.input),
@@ -65,11 +88,29 @@ impl ApplicationHandler for AppHandler {
         }
 
         self.app.step();
-        if let Some(w) = &self.window {
-            w.request_redraw();
+
+        if let Some(ctx) = &self.ctx {
+            ctx.window().request_redraw();
         }
 
-        // Кадр завершён: сбрасываем just_* до следующей пачки событий.
         self.app.engine.resources.input.begin_frame();
     }
 }
+
+pub const VERTEX_SHADER: &str = r#"
+#version 330 core
+layout (location = 0) in vec3 position;
+
+void main() {
+    gl_Position = vec4(position, 1.0);
+}
+"#;
+
+pub const FRAGMENT_SHADER: &str = r#"
+#version 330 core
+out vec4 frag_color;
+
+void main() {
+    frag_color = vec4(0.2, 0.55, 0.9, 1.0);
+}
+"#;

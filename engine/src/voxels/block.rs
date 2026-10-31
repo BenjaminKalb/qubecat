@@ -1,9 +1,22 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct BlockId(pub u16); // AIR = 0
+
+pub struct BlockDef {
+    pub name: &'static str,
+    pub opaque: bool, // перекрывает ли соседние грани
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct BlockPos {
     pub bx: i32,
     pub by: i32,
     pub bz: i32,
 }
+
+pub static BLOCKS: [BlockDef; 2] = [
+    BlockDef { name: "air", opaque: false },
+    BlockDef { name: "stone", opaque: false },
+];
 
 impl BlockPos {
     #[inline]
