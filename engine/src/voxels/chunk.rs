@@ -58,9 +58,7 @@ impl Chunk {
 
     #[inline]
     pub fn fill(&mut self, block_id: u16) {
-        for block in self.blocks.iter_mut() {
-            *block = block_id; // Разыменовываем ссылку, чтобы записать значение
-        }
+        self.blocks.fill(block_id);
         self.dirty = true;
     }
 
@@ -71,7 +69,7 @@ impl Chunk {
 
     #[inline]
     pub fn is_empty(&self) -> bool {
-        self.blocks.iter().all(|&block| block == 0)
+        *self.blocks == [0u16; CHUNK_VOLUME]
     }
 }
 
