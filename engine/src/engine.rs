@@ -1,6 +1,6 @@
 use hecs::{CommandBuffer, World};
 
-use crate::{input::Input, resources::Resources, time::Time};
+use crate::{input::Input, math::camera::Camera, resources::Resources, time::Time};
 
 /// Состояние движка: мир, ресурсы и буфер команд.
 pub struct Engine {
@@ -21,6 +21,7 @@ impl Engine {
                     elapsed: 0.0,
                 },
                 input: Input::default(),
+                camera: Camera::default(),
             },
         }
     }
