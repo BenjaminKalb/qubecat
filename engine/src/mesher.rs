@@ -115,7 +115,7 @@ impl MeshData {
                     let bz = origin_z + z as i32;
 
                     for face in &FACES {
-                        if !Self::is_face_visible(world, chunk, x, y, z, bx, by, bz, face) {
+                        if !Self::is_face_visible(world, chunk, pos, x, y, z, face) {
                             continue;
                         }
 
@@ -132,14 +132,16 @@ impl MeshData {
     fn is_face_visible(
         world: &VoxelWorld,
         chunk: &Chunk,
+        pos: ChunkPos,
         x: usize,
         y: usize,
         z: usize,
-        bx: i32,
-        by: i32,
-        bz: i32,
         face: &Face,
     ) -> bool {
+        let bx = pos.min_block_x() + x as i32;
+        let by = pos.min_block_y() + y as i32;
+        let bz = pos.min_block_z() + z as i32;
+
         let nx = x as i32 + face.neighbor[0];
         let ny = y as i32 + face.neighbor[1];
         let nz = z as i32 + face.neighbor[2];
@@ -169,7 +171,7 @@ impl MeshData {
         };
 
         // Незагруженный чанк считается воздухом.
-        world.get_block(nx, ny, nz).map_or(true, |id| id == AIR)
+        world.get_block(nx, ny, nz).is_none_or(|id| id == AIR)
     }
 
     #[inline]

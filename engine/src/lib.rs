@@ -13,4 +13,5 @@ pub mod voxels;
 pub use application::Application;
 pub use engine::Engine;
 
+pub use glam::Mat4;
 pub use hecs::{CommandBuffer, Entity, World};
