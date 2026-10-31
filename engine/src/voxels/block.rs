@@ -15,7 +15,7 @@ pub struct BlockPos {
 
 pub static BLOCKS: [BlockDef; 2] = [
     BlockDef { name: "air", opaque: false },
-    BlockDef { name: "stone", opaque: false },
+    BlockDef { name: "stone", opaque: true },
 ];
 
 impl BlockPos {

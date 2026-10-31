@@ -30,10 +30,6 @@ impl InputMapper {
         self.bindings.insert(KeyCode::ShiftLeft, Key::LeftShift);
     }
 
-    pub fn remap(&mut self, code: KeyCode, key: Key) {
-        self.bindings.insert(code, key);
-    }
-
     pub fn handle_event(&self, event: &WindowEvent, input: &mut Input) {
         match event {
             WindowEvent::KeyboardInput { event, .. } => {

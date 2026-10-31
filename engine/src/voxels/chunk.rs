@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub};
+use std::{ops::{Add, Sub}, slice::Iter};
 
 pub const CHUNK_SIZE: usize = 16;
 pub const CHUNK_SIZE_SHIFT: u32 = 4;
@@ -54,6 +54,24 @@ impl Chunk {
     pub fn set(&mut self, x: usize, y: usize, z: usize, block: u16) {
         self.blocks[Self::index(x, y, z)] = block;
         self.dirty = true;
+    }
+
+    #[inline]
+    pub fn fill(&mut self, block_id: u16) {
+        for block in self.blocks.iter_mut() {
+            *block = block_id; // Разыменовываем ссылку, чтобы записать значение
+        }
+        self.dirty = true;
+    }
+
+    #[inline]
+    pub fn iter(&self) -> Iter<'_, u16> {
+        self.blocks.iter()
+    }
+
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.blocks.is_empty()
     }
 }
 
