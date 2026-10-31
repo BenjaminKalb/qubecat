@@ -8,7 +8,7 @@ use engine::Application;
 
 pub struct AppHandler {
     app: Application,
-    window: Option<Window>
+    window: Option<Window>,
 }
 
 impl AppHandler {
@@ -61,5 +61,4 @@ impl ApplicationHandler for AppHandler {
             w.request_redraw();
         }
     }
-
 }
