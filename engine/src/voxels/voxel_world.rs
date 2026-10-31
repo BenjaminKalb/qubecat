@@ -37,6 +37,13 @@ impl VoxelWorld {
         self.chunks.keys().copied()
     }
 
+    pub fn dirty_chunks(&self) -> impl Iterator<Item = &ChunkPos> {
+        self.chunks
+            .iter()
+            .filter(|(_, c)| c.dirty)
+            .map(|(pos, _)| pos)
+    }
+
     pub fn len(&self) -> usize {
         self.chunks.len()
     }
