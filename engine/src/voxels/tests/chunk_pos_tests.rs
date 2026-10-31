@@ -1,5 +1,11 @@
 use crate::voxels::chunk::ChunkPos;
 
+<<<<<<< HEAD
+=======
+#[cfg(test)]
+use super::*;
+
+>>>>>>> 96cb987b72c13feeffc53ce75806699b0064f8c1
 use std::collections::HashSet;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
