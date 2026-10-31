@@ -14,6 +14,7 @@ pub const WIDTH: usize = 44; // Ширина экрана в символах
 pub const HEIGHT: usize = 14; // Высота экрана в символах
 
 /// Начальное наполнение мира.
+#[deprecated]
 pub fn populate(world: &mut World) {
     world.spawn((
         Position { x: 22.0, y: 2.0 },
@@ -22,7 +23,7 @@ pub fn populate(world: &mut World) {
     ));
     spawn_wave(world, 10.0, 6);
 }
-
+#[deprecated]
 fn spawn_wave(world: &mut World, y: f32, count: usize) {
     for i in 0..count {
         world.spawn((
@@ -34,6 +35,7 @@ fn spawn_wave(world: &mut World, y: f32, count: usize) {
 }
 
 /// Детерминированный сценарий вместо клавиатуры.
+#[deprecated]
 pub fn demo_input(_w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) {
     res.input.fire = res.time.tick % 10 == 0;
     res.input.move_dir = if (res.time.tick / 40) % 2 == 0 { 1.0 } else { -1.0 };
@@ -41,6 +43,7 @@ pub fn demo_input(_w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) {
 }
 
 /// Ввод игрока превращается в его Velocity.
+#[deprecated]
 pub fn player_control(w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) {
     let dir = res.input.move_dir;
     for (_e, vel, _) in w.query_mut::<(Entity, &mut Velocity, &Player)>() {
@@ -49,6 +52,7 @@ pub fn player_control(w: &mut World, res: &mut Resources, _c: &mut CommandBuffer
 }
 
 /// Интеграция движения: один запрос - одна система.
+#[deprecated]
 pub fn movement(w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) {
     let dt = res.time.dt;
     for (_e, pos, vel) in w.query_mut::<(Entity, &mut Position, &mut Velocity)>() {
@@ -58,6 +62,7 @@ pub fn movement(w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) {
 }
 
 /// Враги отражаются от краев и спускаются к игроку.
+#[deprecated]
 pub fn enemy_ai(w: &mut World, _res: &mut Resources, _c: &mut CommandBuffer) {
     for (_e, pos, vel, _) in w.query_mut::<(Entity, &mut Position, &mut Velocity, &Enemy)>() {
         if pos.x <= 1.0 || pos.x >= (WIDTH - 2) as f32 {
@@ -67,7 +72,7 @@ pub fn enemy_ai(w: &mut World, _res: &mut Resources, _c: &mut CommandBuffer) {
     }
 }
 
-/// Выстрел: спавн пули откладывается в CommandBuffer.
+#[deprecated]
 pub fn player_fire(w: &mut World, res: &mut Resources, cmd: &mut CommandBuffer) {
     if !res.input.fire {
         return;
@@ -86,7 +91,7 @@ pub fn player_fire(w: &mut World, res: &mut Resources, cmd: &mut CommandBuffer) 
     ));
 }
 
-/// Коллизия "пуля=враг": снимки плюс отложенный деспавн.
+#[deprecated]
 pub fn combat(w: &mut World, _res: &mut Resources, cmd: &mut CommandBuffer) {
     // Снимок пуль: копируем данные, мир во время обхода не меняется
     let bullets: Vec<(Entity, Position)> = w
@@ -128,7 +133,7 @@ pub fn combat(w: &mut World, _res: &mut Resources, cmd: &mut CommandBuffer) {
     }
 }
 
-/// ASCII-render: каждая группа сущностей - отдельный читающий запрос.
+#[deprecated]
 pub fn ascii_render(w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) {
     let mut screen = ['.'; WIDTH * HEIGHT];
 
@@ -150,7 +155,7 @@ pub fn ascii_render(w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) 
     }
 }
 
-/// Запись глифа с проверкой границ.
+#[deprecated]
 fn put(screen: &mut [char], pos: &Position, glyph: char) {
     let (x, y) = (pos.x as i32, pos.y as i32);
     if (0..WIDTH as i32).contains(&x) && (0..HEIGHT as i32).contains(&y) {
