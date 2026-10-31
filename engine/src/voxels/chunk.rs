@@ -1,7 +1,11 @@
 use std::ops::{Add, Sub};
 
+pub const CHUNK_SIZE: usize = 16;
+pub const CHUNK_SIZE_SHIFT: u32 = 4;
+pub const CHUNK_VOLUME: usize = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
+
 pub struct Chunk {
-    pub blocks: [u16; 4096], // 16x16x16
+    pub blocks: Box<[u16; CHUNK_VOLUME]>, // 16x16x16
     pub pos: ChunkPos,
     pub dirty: bool,
 }
@@ -25,9 +29,9 @@ impl ChunkPos {
     #[inline]
     pub fn from_block_pos(bx: i32, by: i32, bz: i32) -> Self {
         Self {
-            cx: bx >> 4, // Быстрое деление на 16 через битовый сдвиг
-            cy: by >> 4,
-            cz: bz >> 4,
+            cx: bx >> CHUNK_SIZE_SHIFT, // Быстрое деление на 16 через битовый сдвиг
+            cy: by >> CHUNK_SIZE_SHIFT,
+            cz: bz >> CHUNK_SIZE_SHIFT,
         }
     }
 
