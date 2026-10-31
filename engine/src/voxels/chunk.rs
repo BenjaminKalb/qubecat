@@ -71,7 +71,7 @@ impl Chunk {
 
     #[inline]
     pub fn is_empty(&self) -> bool {
-        self.blocks.is_empty()
+        self.blocks.iter().all(|&block| block == 0)
     }
 }
 
