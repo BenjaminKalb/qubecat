@@ -1,10 +1,15 @@
 use engine::{CommandBuffer, Entity, World, resources::Resources};
 
-
 #[derive(Clone, Copy)]
-pub struct Position { pub x: f32, pub y: f32 }
+pub struct Position {
+    pub x: f32,
+    pub y: f32,
+}
 #[derive(Clone, Copy)]
-pub struct Velocity { pub vx: f32, pub vy: f32 }
+pub struct Velocity {
+    pub vx: f32,
+    pub vy: f32,
+}
 
 pub struct Player; // Маркер: управляемая сущность
 pub struct Enemy; // Маркер: противник
@@ -27,7 +32,10 @@ pub fn populate(world: &mut World) {
 fn spawn_wave(world: &mut World, y: f32, count: usize) {
     for i in 0..count {
         world.spawn((
-            Position { x: 4.0 + i as f32 * 6.0, y },
+            Position {
+                x: 4.0 + i as f32 * 6.0,
+                y,
+            },
             Velocity { vx: 6.0, vy: 0.0 },
             Enemy,
         ));
@@ -38,7 +46,11 @@ fn spawn_wave(world: &mut World, y: f32, count: usize) {
 #[deprecated]
 pub fn demo_input(_w: &mut World, res: &mut Resources, _c: &mut CommandBuffer) {
     res.input.fire = res.time.tick % 10 == 0;
-    res.input.move_dir = if (res.time.tick / 40) % 2 == 0 { 1.0 } else { -1.0 };
+    res.input.move_dir = if (res.time.tick / 40) % 2 == 0 {
+        1.0
+    } else {
+        -1.0
+    };
     res.input.quit = res.time.tick >= 200;
 }
 
@@ -79,13 +91,15 @@ pub fn player_fire(w: &mut World, res: &mut Resources, cmd: &mut CommandBuffer) 
     }
     // Позиция игрока: игрок в демо всегда один
     let mut query = w.query::<(Entity, &Position, &Player)>();
-    let Some((_, pos, _)) = query.iter().next()
-    else {
+    let Some((_, pos, _)) = query.iter().next() else {
         return;
     };
     let pos = *pos;
     cmd.spawn((
-        Position { x: pos.x, y: pos.y + 1.0 },
+        Position {
+            x: pos.x,
+            y: pos.y + 1.0,
+        },
         Velocity { vx: 0.0, vy: 12.0 },
         Bullet,
     ));
@@ -110,9 +124,7 @@ pub fn combat(w: &mut World, _res: &mut Resources, cmd: &mut CommandBuffer) {
     let mut used: Vec<Entity> = Vec::new(); // пули, потраченные в этом тике
     for &(b, bpos) in &bullets {
         for &(e, epos) in &enemies {
-            if !used.contains(&b)
-                && (epos.x - bpos.x).abs() < 1.0
-                && (epos.y - bpos.y).abs() < 1.0
+            if !used.contains(&b) && (epos.x - bpos.x).abs() < 1.0 && (epos.y - bpos.y).abs() < 1.0
             {
                 cmd.despawn(b);
                 cmd.despawn(e);

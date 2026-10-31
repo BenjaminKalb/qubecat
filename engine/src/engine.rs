@@ -15,7 +15,11 @@ impl Engine {
             world: World::new(),
             commands: CommandBuffer::new(),
             resources: Resources {
-                time: Time { tick: 0, dt, elapsed: 0.0 },
+                time: Time {
+                    tick: 0,
+                    dt,
+                    elapsed: 0.0,
+                },
                 input: Input::default(),
             },
         }

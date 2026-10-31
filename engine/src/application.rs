@@ -10,17 +10,21 @@ pub struct Application {
 
 impl Application {
     pub fn new(dt: f32) -> Self {
-        Self { 
-            engine: Engine::new(dt), 
-            dt, 
-            update: Vec::new(), 
-            render: Vec::new() 
+        Self {
+            engine: Engine::new(dt),
+            dt,
+            update: Vec::new(),
+            render: Vec::new(),
         }
     }
 
     fn tick(&mut self) {
         // Разбираем движок на поля: заимствования расходятся честно
-        let Engine { world, commands, resources } = &mut self.engine;
+        let Engine {
+            world,
+            commands,
+            resources,
+        } = &mut self.engine;
         for system in &self.update {
             system(world, resources, commands);
         }
@@ -37,22 +41,35 @@ impl Application {
         let mut last = std::time::Instant::now();
         let mut acc = 0.0f32;
         while !self.engine.resources.input.quit {
-            let frame_start = std::time::Instant::now();          // ① начало кадра
+            let frame_start = std::time::Instant::now(); // ① начало кадра
             acc += last.elapsed().as_secs_f32().min(0.25);
             last = std::time::Instant::now();
-            while acc >= self.dt { acc -= self.dt; self.tick(); }
-            let Engine { world, commands, resources } = &mut self.engine;
-            for system in &self.render { system(world, resources, commands); }
-            let frame_work = frame_start.elapsed();               // ② сколько уже потратили
+            while acc >= self.dt {
+                acc -= self.dt;
+                self.tick();
+            }
+            let Engine {
+                world,
+                commands,
+                resources,
+            } = &mut self.engine;
+            for system in &self.render {
+                system(world, resources, commands);
+            }
+            let frame_work = frame_start.elapsed(); // ② сколько уже потратили
             if frame_work < frame_budget {
-                std::thread::sleep(frame_budget - frame_work);    // ③ доспать до бюджета
+                std::thread::sleep(frame_budget - frame_work); // ③ доспать до бюджета
             }
         }
     }
 
     /// Порядок добавления = порядок исполнения.
     pub fn add_update(mut self, system: SystemFn) -> Self {
-        self.update.push(system); self }
+        self.update.push(system);
+        self
+    }
     pub fn add_render(mut self, system: SystemFn) -> Self {
-        self.render.push(system); self }
+        self.render.push(system);
+        self
+    }
 }

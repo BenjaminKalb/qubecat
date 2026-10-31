@@ -1,10 +1,10 @@
 pub mod application;
+pub mod constants;
 pub mod engine;
 pub mod input;
 pub mod resources;
 pub mod time;
 pub mod types;
-pub mod constants;
 
 pub mod voxels;
 
