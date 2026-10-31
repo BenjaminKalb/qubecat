@@ -9,7 +9,7 @@ pub mod types;
 pub mod voxels;
 
 //pub use application::Application;
-//pub use engine::Engine;
+pub use engine::Engine;
 //pub use input::Input;
 //pub use resources::Resources;
 //pub use time::Time;
