@@ -1,4 +1,7 @@
-use std::{ops::{Add, Sub}, slice::Iter};
+use std::{
+    ops::{Add, Sub},
+    slice::Iter,
+};
 
 pub const CHUNK_SIZE: usize = 16;
 pub const CHUNK_SIZE_SHIFT: u32 = 4;
@@ -67,6 +70,8 @@ impl Chunk {
         self.blocks.iter()
     }
 
+    /// Пустой чанк = все блоки воздух (AIR = 0), а не «массив без элементов»:
+    /// объём у чанка фиксированный.
     #[inline]
     pub fn is_empty(&self) -> bool {
         *self.blocks == [0u16; CHUNK_VOLUME]
